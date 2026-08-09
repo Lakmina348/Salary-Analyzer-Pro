@@ -160,26 +160,10 @@ function downloadPDF() {
     let balance = salary - totalExpense;
     let perc = salary > 0 ? ((totalExpense / salary) * 100).toFixed(1) : 0;
 
-    let statusBoxHTML = '';
-    if (balance < 0) {
-        statusBoxHTML = `
-            <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 30px;">
-                STATUS: Warning! Expenses exceed income by ${perc}%.
-            </div>
-        `;
-    } else {
-        statusBoxHTML = `
-            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; padding: 10px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 30px;">
-                STATUS: You have utilized ${perc}% of your total income. Savings are secure.
-            </div>
-        `;
-    }
-
-    // Printable HTML Template (Clean PDF look) 
-    // Phone එකෙන් වුණත් Desktop Size (800px) එකට හැදෙන්න width: 800px ලබා දී ඇත
+    // Printable HTML Template (Clean PDF look)
     let pdfTemplate = document.createElement('div');
     pdfTemplate.innerHTML = `
-        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; padding: 25px; background: #ffffff; color: #2c3e50; width: 800px; margin: auto;">
+        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; padding: 25px; background: #ffffff; color: #2c3e50; width: 800px; margin: 0 auto;">
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 2px solid #1a73e8; padding-bottom: 12px;">
                 <tr>
                     <td>
@@ -232,7 +216,9 @@ function downloadPDF() {
                 </tr>
             </table>
 
-            ${statusBoxHTML}
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; padding: 10px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 30px;">
+                STATUS: You have utilized ${perc}% of your total income. Savings are secure.
+            </div>
 
             <table style="width: 100%; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 20px;">
                 <tr>
@@ -243,7 +229,6 @@ function downloadPDF() {
         </div>
     `;
 
-    // html2canvas එකට windowWidth: 800 ලබා දී ඇත.
     let opt = {
         margin: [10, 10, 10, 10],
         filename: 'Salary_Analysis_' + name + '.pdf',
