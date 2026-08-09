@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-          :root {
+        :root {
             --primary: #0066cc;
             --primary-light: #e8f0fe;
             --bg-main: #f4f7fc;
@@ -1124,11 +1124,25 @@
                 margin: [10, 10, 10, 10],
                 filename: 'Salary_Analysis_' + name + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                html2canvas: { scale: 2, useCORS: true, windowWidth: 800 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(pdfTemplate).save();
+            // Mobile browsers fail to measure/render a detached element
+            // correctly, which produced an almost-blank PDF. Attach it
+            // off-screen (but in the DOM) with a fixed desktop-like width,
+            // generate the PDF, then remove it.
+            pdfTemplate.style.position = 'fixed';
+            pdfTemplate.style.top = '0';
+            pdfTemplate.style.left = '-9999px';
+            pdfTemplate.style.width = '800px';
+            document.body.appendChild(pdfTemplate);
+
+            html2pdf().set(opt).from(pdfTemplate).save().then(() => {
+                document.body.removeChild(pdfTemplate);
+            }).catch(() => {
+                if (pdfTemplate.parentNode) document.body.removeChild(pdfTemplate);
+            });
         }
     </script>
 </body>
