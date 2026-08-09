@@ -86,6 +86,7 @@ function saveData() {
     };
 
     localStorage.setItem('salary_analyzer_data', JSON.stringify(data));
+    alert("ස්තූතියි! දත්ත සාර්ථකව Save විය.");
 }
 
 // Saved Data Load කිරීම
@@ -128,7 +129,7 @@ function resetAll() {
     }
 }
 
-// PDF Download කිරීම (Mobile Fix එක සමග)
+// ලස්සන Document Layout එකක් සහිතව PDF Download කිරීම
 function downloadPDF() {
     saveData();
     
@@ -159,10 +160,10 @@ function downloadPDF() {
     let balance = salary - totalExpense;
     let perc = salary > 0 ? ((totalExpense / salary) * 100).toFixed(1) : 0;
 
-    // මෙහි width: 800px සහ min-width: 800px අනිවාර්ය කර ඇත.
-    // DOM Element එකක් වෙනුවට කෙලින්ම HTML String එකක් භාවිතා කර ඇත.
-    let pdfTemplateString = `
-        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; padding: 25px; background: #ffffff; color: #2c3e50; width: 800px !important; min-width: 800px !important; max-width: 800px !important; box-sizing: border-box; margin: 0 auto;">
+    // Printable HTML Template (Clean PDF look)
+    let pdfTemplate = document.createElement('div');
+    pdfTemplate.innerHTML = `
+        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; padding: 25px; background: #ffffff; color: #2c3e50;">
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-bottom: 2px solid #1a73e8; padding-bottom: 12px;">
                 <tr>
                     <td>
@@ -228,18 +229,13 @@ function downloadPDF() {
         </div>
     `;
 
-    // html2canvas එකට width සහ windowWidth අනිවාර්යයෙන් ලබා දී ඇත
     let opt = {
         margin: [10, 10, 10, 10],
         filename: 'Salary_Analysis_' + name + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            windowWidth: 800, 
-            width: 800 
-        },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(pdfTemplateString).save();
+    html2pdf().set(opt).from(pdfTemplate).save();
 }
