@@ -1115,19 +1115,32 @@
                 </div>
             `;
 
+            // Mobile browsers capture html2canvas relative to the page's
+            // current scroll position, so if the user had scrolled down
+            // while filling the form, the PDF came out blank at the top
+            // with the real content cut off at the bottom. Remember the
+            // scroll position and cancel it out for the capture.
+            let scrollX = window.scrollX || document.documentElement.scrollLeft || 0;
+            let scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
             let opt = {
                 margin: [10, 10, 10, 10],
                 filename: 'Salary_Analysis_' + name + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, windowWidth: 800 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    windowWidth: 800,
+                    scrollX: -scrollX,
+                    scrollY: -scrollY
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Mobile browsers fail to measure/render a detached element
-            // correctly, which produced an almost-blank PDF. Attach it
-            // off-screen (but in the DOM) with a fixed desktop-like width,
-            // generate the PDF, then remove it.
-            pdfTemplate.style.position = 'fixed';
+            // Attach the template off-screen (but in the DOM, in normal
+            // document flow near the top) so it renders with a correct,
+            // consistent desktop-like layout on mobile too.
+            pdfTemplate.style.position = 'absolute';
             pdfTemplate.style.top = '0';
             pdfTemplate.style.left = '-9999px';
             pdfTemplate.style.width = '800px';
